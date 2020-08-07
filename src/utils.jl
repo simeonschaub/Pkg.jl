@@ -9,6 +9,9 @@ function set_readonly(path)
             end
         end
     end
+    # Set the permissions of the top-level entity as well
+    fmode = filemode(path)
+    chmod(path, fmode & (typemax(fmode) ⊻ 0o222))
     return nothing
 end
 

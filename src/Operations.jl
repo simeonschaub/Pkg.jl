@@ -11,7 +11,7 @@ using REPL.TerminalMenus
 using ..Types, ..Resolve, ..PlatformEngines, ..GitTools
 import ..depots, ..depots1, ..devdir, ..set_readonly, ..Types.PackageEntry
 import ..Artifacts: ensure_all_artifacts_installed, artifact_names, extract_all_hashes, artifact_exists
-using ..BinaryPlatforms
+using Base.BinaryPlatforms
 import ...Pkg
 import ...Pkg: pkg_server
 
@@ -624,7 +624,7 @@ function install_git(
     end
 end
 
-function download_artifacts(ctx::Context, pkgs::Vector{PackageSpec}; platform::Platform=platform_key_abi(),
+function download_artifacts(ctx::Context, pkgs::Vector{PackageSpec}; platform::Platform=Platform(),
                             verbose::Bool=false)
     # Filter out packages that have no source_path()
     # pkg_roots = String[p for p in source_path.((ctx,), pkgs) if p !== nothing]  # this runs up against inference limits?
@@ -636,7 +636,7 @@ function download_artifacts(ctx::Context, pkgs::Vector{PackageSpec}; platform::P
     return download_artifacts(ctx, pkg_roots; platform=platform, verbose=verbose)
 end
 
-function download_artifacts(ctx::Context, pkg_roots::Vector{String}; platform::Platform=platform_key_abi(),
+function download_artifacts(ctx::Context, pkg_roots::Vector{String}; platform::Platform=Platform(),
                             verbose::Bool=false)
     # List of Artifacts.toml files that we're going to download from
     artifacts_tomls = String[]
@@ -660,7 +660,7 @@ function download_artifacts(ctx::Context, pkg_roots::Vector{String}; platform::P
     end
 end
 
-function check_artifacts_downloaded(pkg_root::String; platform::Platform=platform_key_abi())
+function check_artifacts_downloaded(pkg_root::String; platform::Platform=Platform())
     for f in artifact_names
         artifacts_toml = joinpath(pkg_root, f)
         if isfile(artifacts_toml)
@@ -1117,7 +1117,7 @@ function _resolve(ctx::Context, pkgs::Vector{PackageSpec}, preserve::PreserveLev
 end
 
 function add(ctx::Context, pkgs::Vector{PackageSpec}, new_git=UUID[];
-             preserve::PreserveLevel=PRESERVE_TIERED, platform::Platform=platform_key_abi())
+             preserve::PreserveLevel=PRESERVE_TIERED, platform::Platform=Platform())
     assert_can_add(ctx, pkgs)
     # load manifest data
     for (i, pkg) in pairs(pkgs)
@@ -1141,7 +1141,7 @@ end
 
 # Input: name, uuid, and path
 function develop(ctx::Context, pkgs::Vector{PackageSpec}, new_git::Vector{UUID};
-                 preserve::PreserveLevel=PRESERVE_TIERED, platform::Platform=platform_key_abi())
+                 preserve::PreserveLevel=PRESERVE_TIERED, platform::Platform=Platform())
     assert_can_add(ctx, pkgs)
     # no need to look at manifest.. dev will just nuke whatever is there before
     for pkg in pkgs
